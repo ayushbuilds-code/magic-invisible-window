@@ -19,7 +19,7 @@ python3 -m http.server 8000
 ```
 
 Then, open your Google Chrome browser and navigate to:
-[http://localhost:8000](http://localhost:8000)
+[(https://gesture-project-zeta.vercel.app/)
 
 ## How to Use
 1. Click **Start Camera** and grant Chrome permission to use your webcam.
