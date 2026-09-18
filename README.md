@@ -6,7 +6,7 @@ It uses MediaPipe Tasks Vision for hand tracking and the HTML5 Canvas API for re
 ## Features
 - Runs entirely in the browser (no Python dependencies required!)
 - Fast, real-time hand tracking
-- 6 dynamic visual effects (Invisible, Grayscale, Pixelation, Blur, Glitch, Negative)
+- Screenshot capturing and Screen recording
 - Strict Gesture mode for accurate tracking
 - Built-in video recording
 
