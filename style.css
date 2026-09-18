@@ -1,0 +1,223 @@
+/* ── Reset ────────────────────────────────────────────────────────── */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ── Design tokens ────────────────────────────────────────────────── */
+:root {
+    --bg-dark:      #080c10;
+    --text-main:    #f0f0f0;
+    --text-muted:   #8a9ab0;
+    --accent:       #00e5ff;
+    --accent2:      #7c4dff;
+    --danger:       #ff3366;
+    --glass-bg:     rgba(12, 18, 28, 0.72);
+    --glass-border: rgba(255, 255, 255, 0.10);
+    --radius:       14px;
+}
+
+/* ── Base ─────────────────────────────────────────────────────────── */
+body {
+    font-family: 'Outfit', sans-serif;
+    background: var(--bg-dark);
+    color: var(--text-main);
+    overflow: hidden;
+    height: 100vh;
+    width:  100vw;
+}
+
+/* ── Webcam video – hidden, only used as source texture ────────────── */
+#webcam { display: none; }
+
+/* ── Canvas – covers full viewport ────────────────────────────────── */
+#output_canvas {
+    position: absolute;
+    inset: 0;
+    width:  100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+    /* JS handles the horizontal flip via ctx.scale(-1,1) */
+}
+
+/* ── UI overlay ────────────────────────────────────────────────────── */
+#ui-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 1.8rem 2rem;
+    /* IMPORTANT: pointer-events none on the layer, but children opt-in */
+    pointer-events: none;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    pointer-events: none;
+}
+
+.logo h1 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: none;
+    filter: drop-shadow(0 2px 8px rgba(0,229,255,0.35));
+}
+
+/* ── Recording indicator ───────────────────────────────────────────── */
+#rec-indicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(0,0,0,0.75);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--danger);
+    border: 1px solid var(--danger);
+    box-shadow: 0 0 14px rgba(255,51,102,0.35);
+    pointer-events: none;
+}
+
+.dot {
+    width: 9px; height: 9px;
+    background: var(--danger);
+    border-radius: 50%;
+    animation: blink 1s infinite;
+}
+@keyframes blink {
+    0%,100% { opacity: 1; }
+    50%      { opacity: 0.25; }
+}
+
+/* ── Controls strip (bottom-left) ─────────────────────────────────── */
+.controls-container {
+    align-self: flex-start;
+    pointer-events: auto;   /* buttons are clickable */
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+}
+
+/* ── Buttons ──────────────────────────────────────────────────────── */
+.primary-btn {
+    background: linear-gradient(135deg, var(--accent) 0%, #0077ff 100%);
+    color: #000;
+    border: none;
+    padding: 0.85rem 2rem;
+    font-size: 1rem;
+    font-weight: 700;
+    border-radius: 999px;
+    cursor: pointer;
+    box-shadow: 0 4px 18px rgba(0,229,255,0.35);
+    transition: transform 0.18s, box-shadow 0.18s;
+    font-family: inherit;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+}
+.primary-btn:hover  { transform: translateY(-2px); box-shadow: 0 7px 24px rgba(0,229,255,0.55); }
+.primary-btn:active { transform: translateY(1px);  box-shadow: 0 2px 10px rgba(0,229,255,0.25); }
+.primary-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+.secondary-btn {
+    background: rgba(255,255,255,0.07);
+    color: var(--text-main);
+    border: 1px solid var(--glass-border);
+    padding: 0.7rem 1.5rem;
+    font-size: 0.9rem;
+    font-weight: 600;
+    border-radius: 999px;
+    cursor: pointer;
+    backdrop-filter: blur(8px);
+    transition: background 0.2s, border-color 0.2s, transform 0.15s;
+    font-family: inherit;
+    letter-spacing: 0.5px;
+}
+.secondary-btn small { font-size: 0.75em; opacity: 0.65; }
+.secondary-btn:hover  { background: rgba(255,255,255,0.14); border-color: var(--accent); transform: translateY(-1px); }
+.secondary-btn:active { transform: translateY(1px); }
+
+/* ── Glass status panel ────────────────────────────────────────────── */
+.glass-panel {
+    background: var(--glass-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.5rem;
+    width: 270px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.07);
+    transition: opacity 0.3s, transform 0.3s;
+}
+
+.status-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.7rem;
+    padding-bottom: 0.7rem;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.status-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+.label { color: var(--text-muted); font-size: 0.85rem; }
+.value { font-weight: 600; font-size: 0.92rem; }
+.value.highlight { color: var(--accent); }
+
+.instructions {
+    margin-top: 0.9rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    line-height: 1.65;
+}
+.instructions ul { list-style: none; margin-top: 0.4rem; }
+.instructions li strong { color: var(--text-main); }
+
+/* ── Toast ─────────────────────────────────────────────────────────── */
+.toast {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255,255,255,0.92);
+    color: #000;
+    padding: 0.7rem 1.4rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    transition: opacity 0.3s, transform 0.3s;
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+/* ── Hidden utility ────────────────────────────────────────────────── */
+.hidden {
+    opacity: 0 !important;
+    pointer-events: none !important;
+    transform: translateY(8px);
+}
+
+/* ── Debug panel ───────────────────────────────────────────────────── */
+#debug-panel {
+    position: fixed;
+    top: 14px;
+    right: 14px;
+    background: rgba(0,0,0,0.82);
+    color: #00ff88;
+    font: 12px/1.75 'Courier New', monospace;
+    padding: 10px 15px;
+    border-radius: 10px;
+    z-index: 9999;
+    display: none;          /* shown by JS after camera starts */
+    border: 1px solid rgba(0,255,136,0.25);
+    box-shadow: 0 4px 18px rgba(0,0,0,0.6);
+    min-width: 260px;
+    pointer-events: none;
+}

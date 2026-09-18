@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magic Invisible Window</title>
+    <meta name="description" content="See-through hand gesture magic using MediaPipe hand tracking in the browser.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Hidden video element for webcam stream (never shown, only used as texture source) -->
+    <video id="webcam" autoplay playsinline muted></video>
+
+    <!-- Main rendering canvas – draws the mirrored camera + effects -->
+    <canvas id="output_canvas"></canvas>
+
+    <!-- UI Overlay -->
+    <div id="ui-layer">
+        <header>
+            <div class="logo">
+                <h1>Magic Window</h1>
+            </div>
+            <div id="rec-indicator" class="hidden">
+                <span class="dot"></span> REC
+            </div>
+        </header>
+
+        <div class="controls-container">
+            <button id="start-btn" class="primary-btn">▶ Start Camera</button>
+            <button id="capture-bg-btn" class="secondary-btn hidden">📸 Capture Background <small>(B / Space)</small></button>
+
+            <div id="status-panel" class="glass-panel hidden">
+                <div class="status-item">
+                    <span class="label">Effect Mode</span>
+                    <span id="effect-mode-display" class="value highlight">1: Invisible</span>
+                </div>
+                <div class="status-item">
+                    <span class="label">Background</span>
+                    <span id="bg-status-display" class="value">Not captured</span>
+                </div>
+                <div class="instructions">
+                    <p><strong>Controls:</strong></p>
+                    <ul>
+                        <li><strong>B / Space:</strong> Capture Background</li>
+                        <li><strong>R:</strong> Record Video</li>
+                        <li><strong>D:</strong> Toggle Debug Panel</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="toast-message" class="toast hidden">Message</div>
+    </div>
+
+    <!-- Debug panel lives outside ui-layer so it's always on top and clickable -->
+    <div id="debug-panel"></div>
+
+    <!-- App entry point (ES module) -->
+    <script type="module" src="app.js"></script>
+</body>
+</html>
